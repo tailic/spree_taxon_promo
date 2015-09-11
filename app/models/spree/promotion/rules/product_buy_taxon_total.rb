@@ -1,15 +1,10 @@
 module Spree
   class Promotion::Rules::ProductBuyTaxonTotal < PromotionRule
-    preference :amount_min, :decimal, default: 100.00
-    preference :operator_min, :string, default: '>'
-    preference :amount_max, :decimal, default: 1000.00
-    preference :operator_max, :string, default: '<'
+    preference :amount, :decimal, default: 1000.00
     preference :taxon, :string, :default => ''
+    preference :operator, :string, default: '>'
 
-    # attr_accessible :preferred_amount, :preferred_operator, :preferred_taxon
-
-    OPERATORS_MIN = ['gt', 'gte']
-    OPERATORS_MAX = ['lt','lte']
+    OPERATORS = ['gt', 'gte']
 
     def applicable?(promotable)
       promotable.is_a?(Spree::Order)
@@ -25,15 +20,7 @@ module Spree
         end
         item_total += line_item.amount if matched
       end
-      # item_total.send(preferred_operator == 'gte' ? :>= : :>, BigDecimal.new(preferred_amount.to_s))
-
-      lower_limit_condition = item_total.send(preferred_operator_min == 'gte' ? :>= : :>, BigDecimal.new(preferred_amount_min.to_s))
-      upper_limit_condition = item_total.send(preferred_operator_max == 'lte' ? :<= : :<, BigDecimal.new(preferred_amount_max.to_s))
-
-      eligibility_errors.add(:base, ineligible_message_max) unless upper_limit_condition
-      eligibility_errors.add(:base, ineligible_message_min) unless lower_limit_condition
-
-      eligibility_errors.empty?
+      item_total.send(preferred_operator == 'gte' ? :>= : :>, BigDecimal.new(preferred_amount.to_s))
     end
 
     def actionable?(line_item)

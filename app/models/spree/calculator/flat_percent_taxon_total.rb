@@ -6,7 +6,7 @@ module Spree
     # attr_accessible :preferred_flat_percent, :preferred_taxon
 
     def self.description
-      I18n.t(:flat_percent_taxon)
+      Spree.t(:flat_percent_taxon)
     end
 
     def compute(object)
