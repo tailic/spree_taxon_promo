@@ -12,7 +12,7 @@ module Spree
     def compute(object)
       return unless object.present? and object.line_items.present?
 
-      match_taxons = preferred_taxon.split(',')
+      match_taxons = preferred_taxon.split(',').map(&:strip)
 
       item_total = 0.0
       object.line_items.each do |line_item|

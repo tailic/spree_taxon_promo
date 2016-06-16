@@ -1,5 +1,6 @@
 module Spree
   class Promotion::Rules::ProductBuyTaxonTotal < PromotionRule
+
     preference :amount, :decimal, default: 1000.00
     preference :taxon, :string, :default => ''
     preference :operator, :string, default: '>'
@@ -12,10 +13,9 @@ module Spree
 
     def eligible?(order, options = {})
       item_total = 0.0
-      match_taxons = preferred_taxon.split(',')
       order.line_items.each do |line_item|
         matched = false
-        match_taxons.each do |tx|
+        preferred_taxons.each do |tx|
           matched = true if line_item.product.taxons.where(:name => tx).present?
         end
         item_total += line_item.amount if matched
@@ -24,12 +24,14 @@ module Spree
     end
 
     def actionable?(line_item)
-
-      match_taxons = preferred_taxon.split(',')
-      match_taxons.each do |tx|
+      preferred_taxons.each do |tx|
         return true if line_item.product.taxons.where(:name => tx).present?
       end
-      return false
+      false
+    end
+
+    def preferred_taxons
+      preferred_taxon.split(',').map(&:strip)
     end
 
     private
